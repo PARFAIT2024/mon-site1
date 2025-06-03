@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kamel Livraison - Service de Livraison Rapide à Ouagadougou</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hero-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #10b981 100%);
+        }
+        .map-container {
+            height: 400px;
+            background-color: #e5e7eb;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        .map-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e5e7eb;
+            color: #6b7280;
+            font-weight: bold;
+        }
+        .delivery-step {
+            position: relative;
+            padding-left: 2.5rem;
+        }
+        .delivery-step:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: #4f46e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .delivery-step.completed:before {
+            content: "✓";
+            background-color: #10b981;
+        }
+        .delivery-step.active:before {
+            content: "→";
+            background-color: #f59e0b;
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-bottom-color: #4f46e5;
+        }
+        .testimonial-card {
+            transition: all 0.3s ease;
+        }
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .stats-card {
+            transition: all 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: scale(1.03);
+        }
+        .floating-whatsapp {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+        .admin-panel {
+            background-color: #f8fafc;
+            border-left: 4px solid #4f46e5;
+        }
+        .smooth-scroll {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 smooth-scroll">
+
+<!-- Navigation -->
+<nav class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-truck-fast text-indigo-600 text-2xl"></i>
+            <span class="text-xl font-bold text-indigo-600">Kamel Livraison</span>
+        </div>
+        <div class="hidden md:flex space-x-6 items-center">
+            <a href="#home" class="text-indigo-600 font-medium hover:text-indigo-800 transition">Accueil</a>
+            <a href="#services" class="text-gray-600 hover:text-indigo-600 transition">Services</a>
+            <a href="#how-it-works" class="text-gray-600 hover:text-indigo-600 transition">Fonctionnement</a>
+            <a href="#pricing" class="text-gray-600 hover:text-indigo-600 transition">Tarifs</a>
+            <a href="#testimonials" class="text-gray-600 hover:text-indigo-600 transition">Témoignages</a>
+            <a href="#admin" class="text-gray-600 hover:text-indigo-600 transition">Admin</a>
+            <a href="#contact" class="text-gray-600 hover:text-indigo-600 transition">Contact</a>
+            <div class="flex items-center ml-4">
+                <i class="fas fa-phone-alt text-indigo-600 mr-2"></i>
+                <a href="tel:74792298" class="font-medium text-gray-800 hover:text-indigo-600">74 79 22 98</a>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <button onclick="toggleAuthModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center">
+                <i class="fas fa-user-circle mr-2"></i>
+                Connexion
+            </button>
+            <button class="md:hidden text-gray-600 hover:text-indigo-600 transition" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+        </div>
+    </div>
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="hidden md:hidden bg-white py-2 px-4 shadow-lg">
+        <a href="#home" class="block py-3 text-gray-700 hover:text-indigo-600 transition border-b border-gray-100">Accueil</a>
+        <a href="#services" class="block py-3 text-gray-700 hover:text-indigo-600 transition border-b border-gray-100">Services</a>
+        <a href="#how-it-works" class="block py-3 text-gray-700 hover:text-indigo-600 transition border-b border-gray-100">Fonctionnement</a>
+        <a href="#pricing" class="block py-3 text-gray-700 hover:text-indigo-600 transition border-b border-gray-100">Tarifs</a>
+        <a href="#testimonials" class="block py-3 text-gray-700 hover:text-indigo-600 transition border-b border-gray-100">Témoignages</a>
+        <a href="#admin" class="block py-3 text-gray-700 hover:text-indigo-600 transition border-b border-gray-100">Admin</a>
+        <a href="#contact" class="block py-3 text-gray-700 hover:text-indigo-600 transition">Contact</a>
+        <div class="py-3 flex items-center">
+            <i class="fas fa-phone-alt text-indigo-600 mr-2"></i>
+            <a href="tel:74792298" class="font-medium text-gray-800">74 79 22 98</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section id="home" class="hero-gradient text-white py-20">
+    <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+        <div class="md:w-1/2 mb-10 md:mb-0">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6">Livraison Rapide et Fiable à Ouagadougou</h1>
+            <p class="text-xl mb-8">
+                Kamel Livraison vous offre un service de livraison express à <b>Ouagadougou</b>. 
+                Recevez vos colis en moins de 24h dans toute la ville.
+            </p>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <button onclick="toggleOrderModal()" class="bg-white text-indigo-600 px-6 py-3 rounded-lg font-bold hover:bg-gray-100 transition animate-pulse flex items-center justify-center">
+                    <i class="fas fa-shopping-bag mr-2"></i>
+                    Commander maintenant
+                </button>
+                <a href="tel:74792298" class="border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-indigo-600 transition flex items-center justify-center">
+                    <i class="fas fa-phone-alt mr-2"></i>
+                    Appeler: 74 79 22 98
+                </a>
+            </div>
+            <div class="mt-8 flex flex-wrap gap-4">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-300 mr-2"></i>
+                    <span>Livraison en 24h</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-300 mr-2"></i>
+                    <span>Suivi en temps réel</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-300 mr-2"></i>
+                    <span>Service 7j/7</span>
+                </div>
+            </div>
+        </div>
+        <div class="md:w-1/2 flex justify-center">
+            <img src="https://cdn-icons-png.flaticon.com/512/2454/2454183.png" alt="Delivery Illustration" class="w-full max-w-md hover:scale-105 transition duration-500">
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="py-12 bg-indigo-600 text-white">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="stats-card bg-white bg-opacity-10 p-6 rounded-lg text-center backdrop-blur-sm">
+                <div class="text-3xl font-bold mb-2">5,000+</div>
+                <div class="text-sm opacity-90">Livraisons mensuelles</div>
+            </div>
+            <div class="stats-card bg-white bg-opacity-10 p-6 rounded-lg text-center backdrop-blur-sm">
+                <div class="text-3xl font-bold mb-2">98%</div>
+                <div class="text-sm opacity-90">Taux de satisfaction</div>
+            </div>
+            <div class="stats-card bg-white bg-opacity-10 p-6 rounded-lg text-center backdrop-blur-sm">
+                <div class="text-3xl font-bold mb-2">50+</div>
+                <div class="text-sm opacity-90">Livreurs actifs</div>
+            </div>
+            <div class="stats-card bg-white bg-opacity-10 p-6 rounded-lg text-center backdrop-blur-sm">
+                <div class="text-3xl font-bold mb-2">24h</div>
+                <div class="text-sm opacity-90">Délai maximum</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="services" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <span class="text-indigo-600 font-semibold">NOS SERVICES</span>
+            <h2 class="text-3xl font-bold mt-2 text-gray-800">Ce que nous offrons</h2>
+            <div class="w-20 h-1 bg-indigo-600 mx-auto mt-4"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="feature-card bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md">
+                <div class="text-indigo-500 mb-4">
+                    <i class="fas fa-utensils text-4xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-gray-800">Livraison de repas</h3>
+                <p class="text-gray-600 mb-4">Commandez vos plats préférés et recevez-les encore chauds à votre porte.</p>
+                <a href="tel:74792298" class="text-indigo-600 font-medium flex items-center">
+                    <i class="fas fa-phone-alt mr-2"></i>
+                    Appeler: 74 79 22 98
+                </a>
+            </div>
+            <div class="feature-card bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md">
+                <div class="text-green-500 mb-4">
+                    <i class="fas fa-box-open text-4xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-gray-800">Livraison de colis</h3>
+                <p class="text-gray-600 mb-4">Expédiez et recevez vos colis en toute sécurité avec suivi en temps réel.</p>
+                <a href="tel:74792298" class="text-indigo-600 font-medium flex items-center">
+                    <i class="fas fa-phone-alt mr-2"></i>
+                    Appeler: 74 79 22 98
+                </a>
+            </div>
+            <div class="feature-card bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md">
+                <div class="text-purple-500 mb-4">
+                    <i class="fas fa-store text-4xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-gray-800">Courses express</h3>
+                <p class="text-gray-600 mb-4">Faites vos courses en ligne et nous vous les livrons dans l'heure.</p>
+                <a href="tel:74792298" class="text-indigo-600 font-medium flex items-center">
+                    <i class="fas fa-phone-alt mr-2"></i>
+                    Appeler: 74 79 22 98
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Comment ça marche</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div class="bg-indigo-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4">
+                    <span class="text-indigo-600 text-2xl font-bold">1</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-gray-800">Commandez</h3>
+                <p class="text-gray-600">Passez votre commande via notre site, application ou par téléphone au <strong>74 79 22 98</strong>.</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-indigo-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4">
+                    <span class="text-indigo-600 text-2xl font-bold">2</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-gray-800">Confirmation</h3>
+                <p class="text-gray-600">Nous confirmons votre commande et vous attribuons un livreur.</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-indigo-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4">
+                    <span class="text-indigo-600 text-2xl font-bold">3</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-gray-800">En route</h3>
+                <p class="text-gray-600">Votre livreur récupère votre commande et se met en route.</p>
+            </div>
+            <div class="text-center">
+                <div class="bg-indigo-100 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4">
+                    <span class="text-indigo-600 text-2xl font-bold">4</span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-gray-800">Livraison</h3>
+                <p class="text-gray-600">Votre commande vous est livrée à l'adresse indiquée.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tracking Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Suivi de Livraison</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+                <h3 class="text-2xl font-bold mb-4 text-gray-800">Suivez votre commande en temps réel</h3>
+                <p class="text-gray-600 mb-6">Notre système de suivi GPS vous permet de voir exactement où se trouve votre livreur et quand il arrivera.</p>
+                <div class="space-y-6">
+                    <div class="delivery-step completed">
+                        <h4 class="font-bold text-gray-800">Commande confirmée</h4>
+                        <p class="text-gray-500 text-sm">10:30 AM</p>
+                    </div>
+                    <div class="delivery-step completed">
+                        <h4 class="font-bold text-gray-800">Préparation en cours</h4>
+                        <p class="text-gray-500 text-sm">10:45 AM</p>
+                    </div>
+                    <div class="delivery-step active">
+                        <h4 class="font-bold text-gray-800">En cours de livraison</h4>
+                        <p class="text-gray-500 text-sm">11:15 AM</p>
+                    </div>
+                    <div class="delivery-step">
+                        <h4 class="font-bold text-gray-800">Livraison effectuée</h4>
+                        <p class="text-gray-500 text-sm">-</p>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <p class="text-gray-600 mb-4">Problème avec votre livraison ? Contactez-nous immédiatement :</p>
+                    <a href="tel:74792298" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-700 transition inline-flex items-center">
+                        <i class="fas fa-phone-alt mr-2"></i>
+                        Appeler: 74 79 22 98
+                    </a>
+                </div>
+            </div>
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <div class="text-center">
+                        <i class="fas fa-map-marked-alt text-4xl mb-2 text-gray-400"></i>
+                        <p>Carte de suivi en temps réel</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Nos Tarifs</h2>
+        <div class="max-w-md mx-auto">
+            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                <h3 class="text-xl font-bold mb-4 text-gray-800">Service Standard</h3>
+                <div class="text-4xl font-bold mb-4 text-indigo-600">1 500 FCFA</div>
+                <p class="text-gray-600 mb-6">Livraison en 24h dans la ville de <b>Ouagadougou</b></p>
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-2"></i>
+                        <span>Suivi en temps réel</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-2"></i>
+                        <span>Assurance de base</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-2"></i>
+                        <span>Service 7j/7</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-2"></i>
+                        <span>Notification SMS</span>
+                    </li>
+                </ul>
+                <div class="mb-6">
+                    <p class="text-gray-600">Pour commander ou plus d'informations :</p>
+                    <a href="tel:74792298" class="text-indigo-600 font-bold">74 79 22 98</a>
+                </div>
+                <button onclick="toggleOrderModal()" class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition">
+                    Commander maintenant
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <span class="text-indigo-600 font-semibold">TÉMOIGNAGES</span>
+            <h2 class="text-3xl font-bold mt-2 text-gray-800">Ce que disent nos clients</h2>
+            <div class="w-20 h-1 bg-indigo-600 mx-auto mt-4"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="testimonial-card bg-gray-50 p-6 rounded-xl shadow-sm">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold mr-4">AM</div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">Aminata Mbaye</h4>
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-4">"Service rapide et efficace. Mon colis est arrivé en moins de 2 heures !"</p>
+                <div class="text-sm text-gray-500">
+                    <i class="fas fa-phone-alt mr-2"></i>
+                    <span>Commande passée par téléphone: 74 79 22 98</span>
+                </div>
+            </div>
+            <div class="testimonial-card bg-gray-50 p-6 rounded-xl shadow-sm">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold mr-4">PD</div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">Papa Diop</h4>
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-4">"Je commande régulièrement mes repas via Kamel Livraison. Toujours à l'heure et le service client est top."</p>
+                <div class="text-sm text-gray-500">
+                    <i class="fas fa-mobile-alt mr-2"></i>
+                    <span>Commande via l'application mobile</span>
+                </div>
+            </div>
+            <div class="testimonial-card bg-gray-50 p-6 rounded-xl shadow-sm">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold mr-4">FS</div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">Fatou Sow</h4>
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-4">"J'ai appelé le 74 79 22 98 pour une livraison urgente et ils ont tout arrangé en moins d'une heure. Impressionnant !"</p>
+                <div class="text-sm text-gray-500">
+                    <i class="fas fa-phone-alt mr-2"></i>
+                    <span>Commande téléphonique urgente</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Admin Panel Section -->
+<section id="admin" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Espace Administrateur</h2>
+        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden admin-panel">
+            <div class="p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Gestion des livreurs</h3>
+                        <p class="text-gray-600 mb-2">Ajoutez, modifiez ou supprimez les livreurs de la plateforme.</p>
+                        <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition mb-2">Gérer</button>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Gestion des commandes</h3>
+                        <p class="text-gray-600 mb-2">Consultez et traitez les commandes en cours ou passées.</p>
+                        <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition mb-2">Voir les commandes</button>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Gestion des clients</h3>
+                        <p class="text-gray-600 mb-2">Visualisez et administrez la base de clients.</p>
+                        <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition mb-2">Voir les clients</button>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Statistiques</h3>
+                        <p class="text-gray-600 mb-2">Analysez les performances de votre service de livraison.</p>
+                        <button class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition mb-2">Voir les stats</button>
+                    </div>
+                </div>
+                <div class="mt-8 bg-gray-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-3 text-gray-800">Support client</h3>
+                    <p class="text-gray-600 mb-2">Numéro de support pour les clients :</p>
+                    <div class="flex items-center">
+                        <i class="fas fa-phone-alt text-indigo-600 mr-2"></i>
+                        <a href="tel:74792298" class="font-bold text-gray-800 text-lg">74 79 22 98</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-12">
+            <span class="text-indigo-600 font-semibold">CONTACT</span>
+            <h2 class="text-3xl font-bold mt-2 text-gray-800">Nous contacter</h2>
+            <div class="w-20 h-1 bg-indigo-600 mx-auto mt-4"></div>
+        </div>
+        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-xl font-bold mb-4 text-gray-800">Coordonnées</h3>
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-phone-alt text-indigo-600 mt-1 mr-4"></i>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Téléphone</h4>
+                            <a href="tel:74792298" class="text-gray-600 hover:text-indigo-600">74 79 22 98</a>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-envelope text-indigo-600 mt-1 mr-4"></i>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Email</h4>
+                            <a href="mailto:contact@kamellivraison.com" class="text-gray-600 hover:text-indigo-600">contact@kamellivraison.com</a>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-map-marker-alt text-indigo-600 mt-1 mr-4"></i>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Adresse</h4>
+                            <p class="text-gray-600">123 Avenue de la Liberté, Ouagadougou, Burkina Faso</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-clock text-indigo-600 mt-1 mr-4"></i>
+                        <div>
+                            <h4 class="font-bold text-gray-800">Heures d'ouverture</h4>
+                            <p class="text-gray-600">Lundi - Dimanche: 8h00 - 20h00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold mb-4 text-gray-800">Envoyez-nous un message</h3>
+                <form class="space-y-4">
+                    <input type="text" placeholder="Votre nom" class="w-full px-4 py-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="email" placeholder="Votre email" class="w-full px-4 py-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="tel" placeholder="Votre téléphone" class="w-full px-4 py-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <textarea placeholder="Votre message" rows="4" class="w-full px-4 py-3 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                    <button type="submit" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-700 transition w-full">
+                        Envoyer le message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Floating WhatsApp Button -->
+<div class="floating-whatsapp">
+    <a href="https://wa.me/22674792298" target="_blank" class="bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition" aria-label="WhatsApp">
+        <i class="fab fa-whatsapp text-2xl"></i>
+    </a>
+</div>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <i class="fas fa-truck-fast text-indigo-400 text-2xl"></i>
+                    <span class="text-xl font-bold text-white">Kamel Livraison</span>
+                </div>
+                <p class="text-gray-400">Service de livraison rapide et fiable à Ouagadougou.</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4">Liens rapides</h3>
+                <ul class="space-y-2">
+                    <li><a href="#home" class="text-gray-400 hover:text-white transition">Accueil</a></li>
+                    <li><a href="#services" class="text-gray-400 hover:text-white transition">Services</a></li>
+                    <li><a href="#how-it-works" class="text-gray-400 hover:text-white transition">Fonctionnement</a></li>
+                    <li><a href="#pricing" class="text-gray-400 hover:text-white transition">Tarifs</a></li>
+                    <li><a href="#testimonials" class="text-gray-400 hover:text-white transition">Témoignages</a></li>
+                    <li><a href="#contact" class="text-gray-400 hover:text-white transition">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4">Contact</h3>
+                <ul class="space-y-2">
+                    <li>
+                        <i class="fas fa-phone-alt mr-2 text-indigo-400"></i>
+                        <a href="tel:74792298" class="text-gray-400 hover:text-white">74 79 22 98</a>
+                    </li>
+                    <li>
+                        <i class="fas fa-envelope mr-2 text-indigo-400"></i>
+                        <a href="mailto:contact@kamellivraison.com" class="text-gray-400 hover:text-white">contact@kamellivraison.com</a>
+                    </li>
+                    <li>
+                        <i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>
+                        <span class="text-gray-400">123 Avenue de la Liberté, Ouagadougou</span>
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold mb-4">Suivez-nous</h3>
+                <div class="flex space-x-4">
+                    <a href="https://wa.me/22674792298" aria-label="WhatsApp" target="_blank" class="hover:text-green-400 transition"><i class="fab fa-whatsapp text-2xl"></i></a>
+                    <a href="#" aria-label="Facebook" class="hover:text-blue-400 transition"><i class="fab fa-facebook text-2xl"></i></a>
+                    <a href="#" aria-label="Instagram" class="hover:text-pink-400 transition"><i class="fab fa-instagram text-2xl"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400 text-sm">
+            &copy; 2025 Kamel Livraison. Tous droits réservés.
+        </div>
+    </div>
+</footer>
+
+<script>
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('hidden');
+}
+function toggleAuthModal() {
+    alert('Connexion administrateur à implémenter.');
+}
+function toggleOrderModal() {
+    alert('Commande en ligne à implémenter.');
+}
+</script>
+</body>
+</html>
